@@ -178,6 +178,8 @@ pStakeAddress =
           (Opt.info pStakeAddressDeregistrationCert $ Opt.progDesc "Create a stake address deregistration certificate")
       , Opt.command "delegation-certificate"
           (Opt.info pStakeAddressDelegationCert $ Opt.progDesc "Create a stake address delegation certificate")
+      , Opt.command "convert-itn-key"
+          (Opt.info pConvertITNKey $ Opt.progDesc "Convert an ITN public/private key to a shelley stake verification/signing key")
       ]
   where
     pStakeAddressKeyGen :: Parser StakeAddressCmd
@@ -216,16 +218,22 @@ pStakeAddress =
                                     <*> pPoolStakingVerificationKeyFile
                                     <*> pOutputFile
 
+    pConvertITNKey :: Parser StakeAddressCmd
+    pConvertITNKey = StakeKeyITNConversion
+                       <$> some pITNVerificationKeyFile
+                       <*> some pITNSigningKeyFile
+                       <*> many pOutputVerificationFile
+                       <*> many pOutputSigningFile
 
 
-    pDelegationFee :: Parser Lovelace
-    pDelegationFee =
-      Lovelace <$>
-        Opt.option Opt.auto
-          (  Opt.long "delegation-fee"
-          <> Opt.metavar "LOVELACE"
-          <> Opt.help "The delegation fee in Lovelace."
-          )
+pDelegationFee :: Parser Lovelace
+pDelegationFee =
+  Lovelace <$>
+    Opt.option Opt.auto
+      (  Opt.long "delegation-fee"
+      <> Opt.metavar "LOVELACE"
+      <> Opt.help "The delegation fee in Lovelace."
+      )
 
 pTransaction :: Parser TransactionCmd
 pTransaction =
@@ -712,6 +720,16 @@ pColdSigningKeyFile =
       )
     )
 
+pITNSigningKeyFile :: Parser SigningKeyFile
+pITNSigningKeyFile =
+  SigningKeyFile <$>
+    Opt.strOption
+      (  Opt.long "itn-signing-key-file"
+      <> Opt.metavar "FILE"
+      <> Opt.help "Filepath of the ITN signing key."
+      <> Opt.completer (Opt.bashCompleter "file")
+      )
+
 pSomeSigningKeyFiles :: Parser [SigningKeyFile]
 pSomeSigningKeyFiles =
   some $
@@ -818,6 +836,27 @@ pOutputFile =
       <> Opt.completer (Opt.bashCompleter "file")
       )
 
+
+pOutputVerificationFile :: Parser OutputFile
+pOutputVerificationFile =
+  OutputFile <$>
+    Opt.strOption
+      (  Opt.long "out-verification-key-file"
+      <> Opt.metavar "FILE"
+      <> Opt.help "The output verification key file."
+      <> Opt.completer (Opt.bashCompleter "file")
+      )
+
+pOutputSigningFile :: Parser OutputFile
+pOutputSigningFile =
+  OutputFile <$>
+    Opt.strOption
+      (  Opt.long "out-signing-key-file"
+      <> Opt.metavar "FILE"
+      <> Opt.help "The output signing key file."
+      <> Opt.completer (Opt.bashCompleter "file")
+      )
+
 pPoolId :: Parser PoolId
 pPoolId =
   PoolId <$>
@@ -897,6 +936,15 @@ pKESVerificationKeyFile =
         )
     )
 
+pITNVerificationKeyFile :: Parser VerificationKeyFile
+pITNVerificationKeyFile =
+  VerificationKeyFile <$>
+    Opt.strOption
+      (  Opt.long "itn-verification-key-file"
+      <> Opt.metavar "FILE"
+      <> Opt.help "Filepath of the ITN verification key."
+      <> Opt.completer (Opt.bashCompleter "file")
+      )
 
 pNetwork :: Parser Network
 pNetwork =

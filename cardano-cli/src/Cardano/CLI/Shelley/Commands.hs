@@ -83,6 +83,7 @@ data StakeAddressCmd
   | StakeKeyRegistrationCert VerificationKeyFile OutputFile
   | StakeKeyDelegationCert VerificationKeyFile VerificationKeyFile OutputFile
   | StakeKeyDeRegistrationCert VerificationKeyFile OutputFile
+  | StakeKeyITNConversion [VerificationKeyFile] [SigningKeyFile] [OutputFile] [OutputFile]
   deriving (Eq, Show)
 
 
